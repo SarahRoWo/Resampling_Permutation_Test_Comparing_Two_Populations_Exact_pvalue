@@ -1,62 +1,61 @@
+""" Implements a permutation test, returning an approximate p-value.
+
+This script implements a permutation test for comparing two
+populations. This script randomly shuffles data from two
+populations, then compares a test statistic (e.g. sum)
+from the original data with the test statistic of the
+randomly shuffled data. The test statistic for
+every possible combination of the data is compared with the
+test statistic of the original data.
+
+This script was used in Woldemariam et al., Genetics 213, 59 (2019).
+
+For additional information on permutation tests for comparing
+two populations, please refer to Good (2006). Link below:
+https://link.springer.com/content/pdf/10.1007/0-8176-4444-X.pdf
+"""
+
 from itertools import combinations
-from statistics import mean
 
-#manually input experimental results for each condition. 
+# Provide manually inputted data for each condition.
+listA = # Input data (list or tuple) from experiment here.
+listB = # Input data (list or tuple) from control experiment here.
 
-listA = # data for experiment (list)
+# combinations(listA+listB, len(listA)) is a generator that can go
+# through all combinations of data (n choose k).
 
-listB = # data for experiment - control (list)
+# Every combination of values of listA and listB can be generated.
+# This is not tenable for data with a high number of possible
+# combinations.
+listAlistB = combinations(listA+listB, len(listA))
 
-#combinations is a generator that can go through all combinations of data (n choose k)
-
-listAlistB = combinations(listA+listB, len(listA)) # every combination of values of listA and listB can be generated; this is not tenable for other conditions with high n.
-
-referencevalue = sum(listA) # test statistic; can modify depending on experiment
-
+# The referencevalue is the test statistic. Here, the sum of elements
+# of listA is the test statistic.
+referencevalue = sum(listA)
 lessthan = 0
-
 greaterthan = 0
-
 equalto = 0
-
 timesitsrun = 0
 
 while True:
-
     try:
-
         currentlist = next(listAlistB)
-
-        x = sum(currentlist) #sums up the combination from generator
-
-        if x < referencevalue: # this determines whether the combination is greater than, less than, or equal to sum(listA) and keeps a counter
-
+        x = sum(currentlist)
+        if x < referencevalue:
             lessthan += 1
-
         elif x > referencevalue:
-
             greaterthan += 1
-
         elif x == referencevalue:
-
             equalto += 1
-
         timesitsrun +=1
-
         if timesitsrun % 1000000 == 0:
-
             print(timesitsrun)
-
     except StopIteration:
-
         break
 
-pvalue = (greaterthan + equalto) / (lessthan + equalto + greaterthan)
+pvalue = (greaterthan+equalto) / (lessthan+equalto+greaterthan)
 
 print("combinations less than {} sum of slopes = {}" .format('listA', lessthan))
-
 print("combinations greater than {} sum of slopes = {}" .format('listA', greaterthan))
-
 print("combinations equal to {} sum of slopes = {}" .format('listA', equalto))
-
-print("p value = {}" .format(pvalue))
+print("p-value = {}" .format(pvalue))
